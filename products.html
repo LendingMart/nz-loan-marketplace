@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Loan Products - NZ Loan Compare</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-YOUR_MEASUREMENT_ID');
+    </script>
+    
+    <style>
+        :root {
+            --primary-color: #0057b8;
+            --secondary-color: #d42d2d;
+            --success-color: #28a745;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+        }
+        .navbar {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 24px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .back-link {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .container {
+            padding: 20px;
+        }
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .filter-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .filter-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        .results-count {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid #f1f3f4;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .product-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .product-company {
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        .product-category {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .product-tags {
+            margin: 12px 0;
+        }
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 5px;
+        }
+        .tag-popular { background: #fff2e6; color: #f57c00; }
+        .tag-fast { background: #e6f4ea; color: var(--success-color); }
+        .tag-high-approval { background: #e3f2fd; color: var(--primary-color); }
+        .tag-revolving { background: #f3e5f5; color: #7b1fa2; }
+        .tag-comparison { background: #e8f5e8; color: #2e7d32; }
+        .product-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+        .apply-btn {
+            background: linear-gradient(135deg, var(--secondary-color), #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 45, 45, 0.4);
+        }
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        .incentives {
+            background: #fff8e1;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .incentives strong {
+            color: #f57c00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="index.html" class="back-link">← Back</a>
+        <h1>All Loan Products</h1>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-title">Complete Loan Directory</div>
+        <div class="page-subtitle">Browse all available loan products from New Zealand lenders</div>
+
+        <!-- Advanced Filter Section -->
+        <div class="filter-section">
+            <div class="filter-title">Advanced Filters</div>
+            <div class="filter-grid">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="P2P Lender">P2P Lender</option>
+                    <option value="Non-Bank Lender">Non-Bank Lender</option>
+                    <option value="Credit Union">Credit Union</option>
+                    <option value="Bank">Bank</option>
+                    <option value="Fintech Lender">Fintech Lender</option>
+                    <option value="BNPL Service">BNPL Service</option>
+                    <option value="Microfinance">Microfinance</option>
+                    <option value="Pawn Shop Lender">Pawn Shop Lender</option>
+                    <option value="Comparison Platform">Comparison Platform</option>
+                </select>
+                <select class="filter-select" id="amountFilter">
+                    <option value="">Any Loan Amount</option>
+                    <option value="small">Up to $5,000</option>
+                    <option value="medium">$5,001 - $50,000</option>
+                    <option value="large">$50,001+</option>
+                </select>
+                <select class="filter-select" id="approvalFilter">
+                    <option value="">Any Approval Rate</option>
+                    <option value="Very High">Very High Approval</option>
+                    <option value="High">High Approval</option>
+                    <option value="Medium">Medium Approval</option>
+                    <option value="Low">Low Approval</option>
+                </select>
+            </div>
+            <div class="results-count" id="resultsCount">Loading products...</div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="product-grid" id="productsContainer">
+            <!-- Products will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Complete product data based on your spreadsheet
+        const allProducts = [
+            {
+                id: 1,
+                company: "Harmoney",
+                product: "Personal Loans",
+                amount: "NZ$2,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "Very High",
+                revolving: false,
+                incentives: "None",
+                category: "P2P Lender",
+                commission: 25.00,
+                redirectUrl: "https://www.harmoney.co.nz/",
+                description: "New Zealand's first and largest peer-to-peer lender"
+            },
+            {
+                id: 2,
+                company: "Avanti Finance",
+                product: "Personal Loans",
+                amount: "NZ$5,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Non-Bank Lender",
+                commission: 22.00,
+                redirectUrl: "https://www.avanti.co.nz/",
+                description: "Specialist finance company offering personal loans"
+            },
+            {
+                id: 3,
+                company: "Finance Now",
+                product: "Personal Loans",
+                amount: "NZ$2,000–$50,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Non-Bank Lender",
+                commission: 20.00,
+                redirectUrl: "https://www.financenow.co.nz/",
+                description: "Fast online personal loans"
+            },
+            {
+                id: 4,
+                company: "Unity Credit Union",
+                product: "Personal Loans",
+                amount: "NZ$2,000–$40,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "Medium",
+                revolving: false,
+                incentives: "None",
+                category: "Credit Union",
+                commission: 18.00,
+                redirectUrl: "https://www.unitycreditunion.co.nz/",
+                description: "Member-owned financial cooperative"
+            },
+            {
+                id: 5,
+                company: "Heartland Bank",
+                product: "Personal Loans",
+                amount: "NZ$5,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Non-Bank Lender",
+                commission: 23.00,
+                redirectUrl: "https://www.heartland.co.nz/",
+                description: "Digital-first bank offering personal loans"
+            },
+            {
+                id: 6,
+                company: "Squirrel",
+                product: "Personal Loans",
+                amount: "NZ$2,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "Medium",
+                popularity: "Medium",
+                revolving: false,
+                incentives: "None",
+                category: "Non-Bank Lender",
+                commission: 19.00,
+                redirectUrl: "https://www.squirrel.co.nz/",
+                description: "Non-bank lender offering personal loans"
+            },
+            {
+                id: 7,
+                company: "Prospa",
+                product: "Business Loans",
+                amount: "NZ$5,000–$500,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "Medium",
+                revolving: false,
+                incentives: "None",
+                category: "Fintech Lender",
+                commission: 35.00,
+                redirectUrl: "https://prospa.com/nz/",
+                description: "Business loans for SMEs"
+            },
+            {
+                id: 8,
+                company: "Beyond Bank",
+                product: "Personal Loans",
+                amount: "NZ$5,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "Medium",
+                revolving: false,
+                incentives: "None",
+                category: "Bank",
+                commission: 21.00,
+                redirectUrl: "https://www.beyondbank.co.nz/",
+                description: "Bank offering personal loans"
+            },
+            {
+                id: 9,
+                company: "TSB Bank",
+                product: "Personal Loans",
+                amount: "NZ$5,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "Medium",
+                revolving: false,
+                incentives: "None",
+                category: "Bank",
+                commission: 21.00,
+                redirectUrl: "https://www.tsb.co.nz/",
+                description: "Bank offering personal loans"
+            },
+            {
+                id: 10,
+                company: "Canstar",
+                product: "Personal Loans Comparison",
+                amount: "N/A",
+                approvalTime: "N/A",
+                approvalRate: "N/A",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Comparison Platform",
+                commission: 5.00,
+                redirectUrl: "https://www.canstar.co.nz/",
+                description: "Compare personal loans from multiple lenders"
+            },
+            {
+                id: 11,
+                company: "MoneyHub",
+                product: "Personal Loans Comparison",
+                amount: "N/A",
+                approvalTime: "N/A",
+                approvalRate: "N/A",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Comparison Platform",
+                commission: 5.00,
+                redirectUrl: "https://www.moneyhub.co.nz/",
+                description: "Comprehensive personal loans comparison"
+            },
+            {
+                id: 12,
+                company: "Glimp",
+                product: "Personal Loans Comparison",
+                amount: "N/A",
+                approvalTime: "N/A",
+                approvalRate: "N/A",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Comparison Platform",
+                commission: 5.00,
+                redirectUrl: "https://glimp.co.nz/",
+                description: "Compare loan offers from multiple providers"
+            },
+            {
+                id: 13,
+                company: "Laybuy",
+                product: "BNPL",
+                amount: "Up to NZ$1,500",
+                approvalTime: "Instant",
+                approvalRate: "High",
+                popularity: "Very High",
+                revolving: true,
+                incentives: "First purchase discount",
+                category: "BNPL Service",
+                commission: 8.00,
+                redirectUrl: "https://www.laybuy.com/nz",
+                description: "Buy now, pay later in 6 weekly payments"
+            },
+            {
+                id: 14,
+                company: "Latitude Financial Services (Gem Finance)",
+                product: "BNPL",
+                amount: "Up to NZ$1,000",
+                approvalTime: "Instant",
+                approvalRate: "High",
+                popularity: "High",
+                revolving: true,
+                incentives: "None",
+                category: "BNPL Service",
+                commission: 7.00,
+                redirectUrl: "https://www.latitudefinancial.com/",
+                description: "Buy now, pay later service"
+            },
+            {
+                id: 15,
+                company: "Ngā Tāngata Microfinance",
+                product: "Little Loans",
+                amount: "Up to NZ$5,000",
+                approvalTime: "1–2 days",
+                approvalRate: "High",
+                popularity: "Low",
+                revolving: false,
+                incentives: "Financial mentoring",
+                category: "Microfinance",
+                commission: 12.00,
+                redirectUrl: "https://ngatangatamicrofinance.com/",
+                description: "Social lender helping low-income NZers"
+            },
+            {
+                id: 16,
+                company: "Instant Finance",
+                product: "Personal Loans",
+                amount: "NZ$2,000–$50,000",
+                approvalTime: "1–2 days",
+                approvalRate: "Medium",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Non-Bank Lender",
+                commission: 17.00,
+                redirectUrl: "https://www.instantfinance.co.nz/",
+                description: "Fast personal loans"
+            },
+            {
+                id: 17,
+                company: "Cash Converters",
+                product: "Personal Loans",
+                amount: "NZ$200–$5,000",
+                approvalTime: "1–2 days",
+                approvalRate: "Medium",
+                popularity: "High",
+                revolving: false,
+                incentives: "None",
+                category: "Pawn Shop Lender",
+                commission: 15.00,
+                redirectUrl: "https://www.cashconverters.co.nz/",
+                description: "Short-term personal loans"
+            },
+            {
+                id: 18,
+                company: "Lending Crowd",
+                product: "Personal Loans",
+                amount: "NZ$2,000–$100,000",
+                approvalTime: "1–2 days",
+                approvalRate: "Medium",
+                popularity: "Medium",
+                revolving: false,
+                incentives: "None",
+                category: "P2P Lender",
+                commission: 24.00,
+                redirectUrl: "https://www.lendingcrowd.co.nz/",
+                description: "Peer-to-peer lending platform"
+            }
+        ];
+
+        let filteredProducts = [...allProducts];
+
+        // Render products
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            if (filteredProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <h3>No matching loans found</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                resultsCount.textContent = '0 products found';
+                return;
+            }
+
+            resultsCount.textContent = `${filteredProducts.length} products found`;
+            
+            container.innerHTML = filteredProducts.map(product => {
+                // Determine tags based on product properties
+                const tags = [];
+                if (product.popularity === 'Very High' || product.popularity === 'High') {
+                    tags.push('<span class="tag tag-popular">Popular</span>');
+                }
+                if (product.approvalTime === 'Instant' || product.approvalTime.includes('1 day')) {
+                    tags.push('<span class="tag tag-fast">Fast Approval</span>');
+                }
+                if (product.approvalRate === 'High' || product.approvalRate === 'Very High') {
+                    tags.push('<span class="tag tag-high-approval">High Approval</span>');
+                }
+                if (product.revolving) {
+                    tags.push('<span class="tag tag-revolving">Revolving Credit</span>');
+                }
+                if (product.category === 'Comparison Platform') {
+                    tags.push('<span class="tag tag-comparison">Comparison</span>');
+                }
+
+                // Show incentives if available
+                const incentivesHTML = product.incentives && product.incentives !== "None" ? 
+                    `<div class="incentives"><strong>Special Offer:</strong> ${product.incentives}</div>` : '';
+
+                return `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div>
+                                <div class="product-name">${product.product}</div>
+                                <div class="product-company">${product.company}</div>
+                                <div class="product-category">${product.category}</div>
+                                <div class="product-tags">
+                                    ${tags.join('')}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${incentivesHTML}
+                        
+                        <div class="product-stats">
+                            <div class="stat-item">
+                                <div class="stat-label">Loan Amount</div>
+                                <div class="stat-value">${product.amount}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Approval Time</div>
+                                <div class="stat-value">${product.approvalTime}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Approval Rate</div>
+                                <div class="stat-value">${product.approvalRate}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Credit Type</div>
+                                <div class="stat-value">${product.revolving ? 'Revolving' : 'Term Loan'}</div>
+                            </div>
+                        </div>
+                        
+                        <p style="color: #666; margin: 15px 0; line-height: 1.5;">${product.description}</p>
+                        
+                        <button class="apply-btn" onclick="trackProductClick(${product.id}, '${product.company} - ${product.product}', ${product.commission}, '${product.redirectUrl}')">
+                            ${product.category === 'Comparison Platform' ? 'Compare Now' : 'Apply Now'} - ${product.company}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter functions
+        function applyFilters() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const amountFilter = document.getElementById('amountFilter').value;
+            const approvalFilter = document.getElementById('approvalFilter').value;
+
+            filteredProducts = allProducts.filter(product => {
+                // Category filter
+                const categoryMatch = !categoryFilter || product.category === categoryFilter;
+                
+                // Amount filter
+                let amountMatch = true;
+                if (amountFilter && product.amount !== "N/A") {
+                    const maxAmount = getMaxAmount(product.amount);
+                    if (amountFilter === 'small') amountMatch = maxAmount <= 5000;
+                    else if (amountFilter === 'medium') amountMatch = maxAmount > 5000 && maxAmount <= 50000;
+                    else if (amountFilter === 'large') amountMatch = maxAmount > 50000;
+                } else if (amountFilter && product.amount === "N/A") {
+                    amountMatch = false; // Hide comparison platforms when amount filter is applied
+                }
+                
+                // Approval rate filter
+                const approvalMatch = !approvalFilter || product.approvalRate === approvalFilter;
+                
+                return categoryMatch && amountMatch && approvalMatch;
+            });
+
+            renderProducts();
+        }
+
+        function getMaxAmount(amountStr) {
+            if (amountStr.includes('Up to')) {
+                const match = amountStr.match(/\$([0-9,]+)/);
+                return match ? parseInt(match[1].replace(/,/g, '')) : 0;
+            }
+            
+            const amounts = amountStr.match(/\$([0-9,]+)/g);
+            if (amounts && amounts.length === 2) {
+                return parseInt(amounts[1].replace(/[$,]/g, ''));
+            }
+            
+            return 0;
+        }
+
+        // Tracking function
+        function trackProductClick(productId, productName, commission, redirectUrl) {
+            gtag('event', 'product_click', {
+                'product_id': productId,
+                'product_name': productName,
+                'commission': commission,
+                'event_category': 'nz_loan_products',
+                'currency': 'NZD'
+            });
+            
+            saveClickToLocal(productId, productName, commission);
+            
+            setTimeout(() => {
+                window.open(redirectUrl, '_blank');
+            }, 500);
+        }
+        
+        function saveClickToLocal(productId, productName, commission) {
+            try {
+                const clickData = {
+                    productId,
+                    productName,
+                    commission,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer
+                };
+                
+                let allClicks = JSON.parse(localStorage.getItem('nz_product_clicks') || '[]');
+                allClicks.push(clickData);
+                
+                if (allClicks.length > 1000) {
+                    allClicks = allClicks.slice(-500);
+                }
+                
+                localStorage.setItem('nz_product_clicks', JSON.stringify(allClicks));
+                
+            } catch (error) {
+                console.error('Failed to save click data:', error);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            
+            // Set up filter event listeners
+            document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+            document.getElementById('amountFilter').addEventListener('change', applyFilters);
+            document.getElementById('approvalFilter').addEventListener('change', applyFilters);
+            
+            // Send page view event
+            gtag('event', 'page_view', {
+                page_title: 'All Loan Products - NZ Loan Compare',
+                page_location: window.location.href
+            });
+        });
+    </script>
+</body>
+</html>

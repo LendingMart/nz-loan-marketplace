@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NZ Loan Compare</title>
+    
+    <style>
+        :root {
+            --primary-color: #0057b8;
+            --secondary-color: #d42d2d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 24px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .back-link {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-today { color: var(--primary-color); }
+        .stat-total { color: var(--success-color); }
+        .stat-revenue { color: var(--secondary-color); }
+        .stat-products { color: var(--info-color); }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .product-table th,
+        .product-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .product-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .product-table tr:hover {
+            background: #f8f9fa;
+        }
+        .click-count {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .revenue {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        .btn-danger {
+            background: var(--secondary-color);
+            color: white;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            background: white;
+        }
+        .date-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .date-input {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+        }
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .export-section {
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="index.html" class="back-link">← Back to Site</a>
+        <h1>Admin Dashboard</h1>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Statistics Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number stat-today" id="todayClicks">0</div>
+                <div class="stat-label">Today's Clicks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number stat-total" id="totalClicks">0</div>
+                <div class="stat-label">Total Clicks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number stat-revenue" id="totalRevenue">$0</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number stat-products" id="productCount">0</div>
+                <div class="stat-label">Active Products</div>
+            </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="section">
+            <div class="section-title">
+                <span>Performance Overview</span>
+                <select class="filter-select" id="chartRange">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Product Performance -->
+        <div class="section">
+            <div class="section-title">
+                <span>Product Performance</span>
+                <div class="filters">
+                    <select class="filter-select" id="productSort">
+                        <option value="clicks">Sort by Clicks</option>
+                        <option value="revenue">Sort by Revenue</option>
+                        <option value="name">Sort by Name</option>
+                    </select>
+                    <button class="btn btn-success" onclick="exportProductData()">Export Product Data</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Company</th>
+                            <th>Category</th>
+                            <th>Today's Clicks</th>
+                            <th>Total Clicks</th>
+                            <th>Revenue</th>
+                            <th>Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <!-- Product data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Click History -->
+        <div class="section">
+            <div class="section-title">
+                <span>Recent Clicks</span>
+                <div class="filters">
+                    <select class="filter-select" id="clickFilter">
+                        <option value="all">All Clicks</option>
+                        <option value="today">Today Only</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="exportClickData()">Export Click Data</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Product</th>
+                            <th>Commission</th>
+                            <th>Referrer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clickTableBody">
+                        <!-- Click data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="section">
+            <div class="section-title">Data Management</div>
+            <div class="export-section">
+                <p><strong>Data Export Options:</strong></p>
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="exportAllData()">Export All Data (CSV)</button>
+                    <button class="btn btn-success" onclick="exportRevenueReport()">Revenue Report</button>
+                    <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product data
+        const products = [
+            { id: 1, company: "Harmoney", product: "Personal Loans", category: "P2P Lender", commission: 25.00 },
+            { id: 2, company: "Avanti Finance", product: "Personal Loans", category: "Non-Bank Lender", commission: 22.00 },
+            { id: 3, company: "Laybuy", product: "BNPL", category: "BNPL Service", commission: 8.00 },
+            { id: 4, company: "Unity Credit Union", product: "Personal Loans", category: "Credit Union", commission: 18.00 },
+            { id: 5, company: "Finance Now", product: "Personal Loans", category: "Non-Bank Lender", commission: 20.00 },
+            { id: 6, company: "Heartland Bank", product: "Personal Loans", category: "Bank", commission: 23.00 },
+            { id: 7, company: "Ngā Tāngata Microfinance", product: "Little Loans", category: "Microfinance", commission: 12.00 },
+            { id: 8, company: "Prospa", product: "Business Loans", category: "Fintech Lender", commission: 35.00 }
+        ];
+
+        let clickData = [];
+        let performanceChart = null;
+
+        // Load data from localStorage
+        function loadData() {
+            try {
+                clickData = JSON.parse(localStorage.getItem('nz_product_clicks')) || [];
+                updateDashboard();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                clickData = [];
+            }
+        }
+
+        // Update dashboard statistics
+        function updateDashboard() {
+            const today = new Date().toDateString();
+            
+            // Calculate statistics
+            const todayClicks = clickData.filter(click => 
+                new Date(click.timestamp).toDateString() === today
+            ).length;
+            
+            const totalRevenue = clickData.reduce((sum, click) => sum + (click.commission || 0), 0);
+            
+            // Update DOM
+            document.getElementById('todayClicks').textContent = todayClicks.toLocaleString();
+            document.getElementById('totalClicks').textContent = clickData.length.toLocaleString();
+            document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toFixed(2);
+            document.getElementById('productCount').textContent = products.length;
+            
+            // Update tables
+            updateProductTable();
+            updateClickTable();
+            updatePerformanceChart();
+        }
+
+        // Update product performance table
+        function updateProductTable() {
+            const tbody = document.getElementById('productTableBody');
+            const today = new Date().toDateString();
+            const sortBy = document.getElementById('productSort').value;
+            
+            // Calculate product statistics
+            const productStats = products.map(product => {
+                const productClicks = clickData.filter(click => click.productId === product.id);
+                const todayClicks = productClicks.filter(click => 
+                    new Date(click.timestamp).toDateString() === today
+                ).length;
+                const revenue = productClicks.reduce((sum, click) => sum + (click.commission || 0), 0);
+                
+                return {
+                    ...product,
+                    totalClicks: productClicks.length,
+                    todayClicks,
+                    revenue
+                };
+            });
+            
+            // Sort products
+            productStats.sort((a, b) => {
+                if (sortBy === 'clicks') return b.totalClicks - a.totalClicks;
+                if (sortBy === 'revenue') return b.revenue - a.revenue;
+                return a.company.localeCompare(b.company);
+            });
+            
+            // Render table
+            tbody.innerHTML = productStats.map(product => `
+                <tr>
+                    <td><strong>${product.product}</strong></td>
+                    <td>${product.company}</td>
+                    <td>${product.category}</td>
+                    <td class="click-count">${product.todayClicks}</td>
+                    <td class="click-count">${product.totalClicks}</td>
+                    <td class="revenue">$${product.revenue.toFixed(2)}</td>
+                    <td>$${product.commission.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Update click history table
+        function updateClickTable() {
+            const tbody = document.getElementById('clickTableBody');
+            const filter = document.getElementById('clickFilter').value;
+            const today = new Date().toDateString();
+            
+            let filteredClicks = [...clickData];
+            if (filter === 'today') {
+                filteredClicks = filteredClicks.filter(click => 
+                    new Date(click.timestamp).toDateString() === today
+                );
+            }
+            
+            // Show latest clicks first
+            filteredClicks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Take only last 50 clicks for display
+            const displayClicks = filteredClicks.slice(0, 50);
+            
+            if (displayClicks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="no-data">No click data available</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = displayClicks.map(click => {
+                const product = products.find(p => p.id === click.productId);
+                const time = new Date(click.timestamp).toLocaleString();
+                const referrer = click.referrer || 'Direct';
+                
+                return `
+                    <tr>
+                        <td>${time}</td>
+                        <td><strong>${product ? product.company : 'Unknown'}</strong> - ${click.productName}</td>
+                        <td class="revenue">$${click.commission.toFixed(2)}</td>
+                        <td style="color: #6c757d; font-size: 12px;">${referrer}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Update performance chart
+        function updatePerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const days = parseInt(document.getElementById('chartRange').value);
+            
+            // Calculate daily clicks and revenue for the last N days
+            const dailyData = {};
+            const today = new Date();
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                dailyData[dateStr] = { clicks: 0, revenue: 0 };
+            }
+            
+            clickData.forEach(click => {
+                const clickDate = new Date(click.timestamp).toISOString().split('T')[0];
+                if (dailyData[clickDate]) {
+                    dailyData[clickDate].clicks++;
+                    dailyData[clickDate].revenue += click.commission || 0;
+                }
+            });
+            
+            const labels = Object.keys(dailyData);
+            const clickCounts = labels.map(date => dailyData[date].clicks);
+            const revenues = labels.map(date => dailyData[date].revenue);
+            
+            // Destroy existing chart
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+            
+            // Create new chart
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Clicks',
+                            data: clickCounts,
+                            borderColor: '#0057b8',
+                            backgroundColor: 'rgba(0, 87, 184, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Revenue (NZD)',
+                            data: revenues,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Clicks'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Revenue (NZD)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export functions
+        function exportProductData() {
+            const productStats = products.map(product => {
+                const productClicks = clickData.filter(click => click.productId === product.id);
+                const revenue = productClicks.reduce((sum, click) => sum + (click.commission || 0), 0);
+                
+                return {
+                    Company: product.company,
+                    Product: product.product,
+                    Category: product.category,
+                    Commission: product.commission,
+                    TotalClicks: productClicks.length,
+                    TotalRevenue: revenue
+                };
+            });
+            
+            exportToCSV(productStats, 'product-performance.csv');
+        }
+
+        function exportClickData() {
+            const exportData = clickData.map(click => {
+                const product = products.find(p => p.id === click.productId);
+                return {
+                    Timestamp: click.timestamp,
+                    ProductID: click.productId,
+                    ProductName: click.productName,
+                    Company: product ? product.company : 'Unknown',
+                    Commission: click.commission,
+                    Referrer: click.referrer || 'Direct',
+                    UserAgent: click.userAgent
+                };
+            });
+            
+            exportToCSV(exportData, 'click-data.csv');
+        }
+
+        function exportAllData() {
+            exportClickData();
+        }
+
+        function exportRevenueReport() {
+            const today = new Date().toDateString();
+            const todayClicks = clickData.filter(click => 
+                new Date(click.timestamp).toDateString() === today
+            );
+            const todayRevenue = todayClicks.reduce((sum, click) => sum + (click.commission || 0), 0);
+            const totalRevenue = clickData.reduce((sum, click) => sum + (click.commission || 0), 0);
+            
+            const report = [
+                { Metric: 'Date', Value: new Date().toLocaleDateString() },
+                { Metric: 'Today\'s Clicks', Value: todayClicks.length },
+                { Metric: 'Today\'s Revenue', Value: todayRevenue.toFixed(2) },
+                { Metric: 'Total Clicks', Value: clickData.length },
+                { Metric: 'Total Revenue', Value: totalRevenue.toFixed(2) },
+                { Metric: 'Active Products', Value: products.length }
+            ];
+            
+            exportToCSV(report, 'revenue-report.csv');
+        }
+
+        function exportToCSV(data, filename) {
+            if (data.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            const headers = Object.keys(data[0]);
+            const csvRows = [headers.join(',')];
+            
+            data.forEach(row => {
+                const values = headers.map(header => {
+                    const value = row[header];
+                    return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+                });
+                csvRows.push(values.join(','));
+            });
+            
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', filename);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                localStorage.removeItem('nz_product_clicks');
+                clickData = [];
+                updateDashboard();
+                alert('All data has been cleared.');
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // Set up event listeners
+            document.getElementById('chartRange').addEventListener('change', updatePerformanceChart);
+            document.getElementById('productSort').addEventListener('change', updateProductTable);
+            document.getElementById('clickFilter').addEventListener('change', updateClickTable);
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadData, 30000);
+        });
+    </script>
+</body>
+</html>
